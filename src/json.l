@@ -1,17 +1,12 @@
 %{
-    #include<stdio.h>
-    #include "json.tab.h"
-    char *strclone(char *str);
-    /*
-    #define STRING "str"
-    #define NUMBER "number"
-    #define O_BEGIN "o_begin"
-    #define O_END "o_end"
-    #define A_BEGIN "a_begin"
-    #define A_END "a_end"
-    #define COMMA "comma"
-    */
+
+#include <cstdint>
+#include <stdio.h>
+#include "json.tab.h"
+char *strclone(char *str);
+
 %}
+
 DIGIT1to9 [1-9]
 DIGIT [0-9]
 DIGITS {DIGIT}+
@@ -28,23 +23,27 @@ CHAR {UNESCAPEDCHAR}|{ESCAPEDCHAR}|{UNICODECHAR}
 CHARS {CHAR}+
 DBL_QUOTE ["]
 %%
+
 {DBL_QUOTE}{DBL_QUOTE} |
 {DBL_QUOTE}{CHARS}{DBL_QUOTE} {
-    yylval=strclone(yytext);
+    yylval.s = strclone(yytext);
     return STRING;
 };
 {NUMBER} {
-    yylval=strclone(yytext);
+    yylval.s = strclone(yytext);
     return NUMBER;
 }
-true {
-    return true;
+TRUE {
+    yylval.i = 1;
+    return TRUE;
 };
-false {
-    return false;
+FALSE {
+    yylval.i = 0;
+    return FALSE;
 };
-null {
-    return null;
+NONE {
+    yylval.i = 0;
+    return NONE;
 };
 \{ {
     return O_BEGIN;
@@ -76,10 +75,10 @@ null {
     exit(0);
 }
 %%
-char *strclone(char *str)
-{
-    int len = strlen(str);
-    char *clone = (char *)malloc(sizeof(char)*(len+1));
-    strcpy(clone,str);
-    return clone;
+char *strclone(char *str) {
+  int len = strlen(str);
+  char *clone = (char*) malloc(sizeof(char) * (len+1));
+  strcpy(clone, str);
+  clone[len] = 0;
+  return clone;
 }
