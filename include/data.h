@@ -43,16 +43,11 @@ class Value : public BaseNode {
   using DataType = T;
   Value(const T &data_) : data(data_) {}
   ~Value() {}
+  friend class BaseNode;
+  inline void Accept(BaseVisitor *visitor) override;
  private:
   DataType data;
 };
-
-using Object = Value<std::map<std::string, BaseNode*>>;
-using Int = Value<int64_t>;
-using Float = Value<double>;
-using Bool = Value<bool>;
-using String = Value<std::string>;
-using Array = Value<std::vector<BaseNode*>>;
 
 template<typename T>
 inline T* BaseNode::As() {
