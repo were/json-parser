@@ -3,9 +3,11 @@
 
 void yyrestart(FILE*);
 
-int main(int argc, char **argv) {
-  FILE *f = fopen(argv[1], "r");
-  yyrestart(f);
-  struct Param p;
-  yyparse(&p);
+int main(int argc, char *argv[]) {
+   params p;
+   yyrestart(fopen(argv[1], "r"));
+   yyparse(&p);
+   json::JSONPrinter printer(std::cout);
+   p.data->Accept(&printer);
+   return 0;
 }

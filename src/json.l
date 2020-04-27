@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "data.h"
+#include "visitor.h"
 
 #include "json.tab.h"
 char *strclone(char *str);
@@ -29,7 +30,9 @@ DBL_QUOTE ["]
 
 {DBL_QUOTE}{DBL_QUOTE} |
 {DBL_QUOTE}{CHARS}{DBL_QUOTE} {
-    yylval.s = new json::String(yytext);
+    int len = strlen(yytext) - 2;
+    std::string str(yytext + 1, yytext + 1 + len);
+    yylval.s = new json::String(str);
     return STRING;
 };
 {NUMBER} {

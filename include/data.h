@@ -6,10 +6,25 @@
 
 namespace json {
 
+class BaseNode;
+
+}
+namespace plain {
+
+using Object = std::map<std::string, json::BaseNode*>;
+using Array = std::vector<json::BaseNode*>;
+
+}
+
+namespace json {
+
+class BaseVisitor;
+
 class BaseNode {
  public:
-  virtual ~BaseNode() {}
+  virtual void Accept(BaseVisitor *) = 0;
   template<typename T> inline T* As();
+  virtual ~BaseNode() {}
 };
 
 template<typename T>
@@ -18,16 +33,11 @@ class Value : public BaseNode {
   using DataType = T;
   Value(const T &data_) : data(data_) {}
   ~Value() {}
+  friend class BaseNode;
+  inline void Accept(BaseVisitor *visitor) override;
  private:
   DataType data;
 };
-
-using Object = Value<std::map<std::string, BaseNode*>>;
-using Int = Value<int64_t>;
-using Float = Value<double>;
-using Bool = Value<bool>;
-using String = Value<std::string>;
-using Array = Value<std::vector<BaseNode*>>;
 
 template<typename T>
 inline T* BaseNode::As() {
