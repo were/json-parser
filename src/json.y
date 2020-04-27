@@ -28,13 +28,17 @@ struct params {
 %}
 
 %union {
-  uint64_t i;
-  char *s;
+  json::Int *i;
+  json::Bool *b;
+  json::String *s;
+  json::BaseNode *base;
 }
 
-%token<s> NUMBER STRING
-%token<i> TRUE FALSE NONE
-%type<s> START OBJECT MEMBERS PAIR ARRAY VALUE ELEMENTS
+%token<s> STRING NONE
+%token<i> NUMBER
+%token<b> TRUE FALSE
+%type<s> START OBJECT MEMBERS PAIR ARRAY
+%type<base> VALUE ELEMENTS
 %left O_BEGIN O_END A_BEGIN A_END
 %left COMMA
 %left COLON
@@ -49,41 +53,35 @@ START: ARRAY {
   }
 ;
 OBJECT: O_BEGIN O_END {
-    $$ = "{}";
+    $$ = nullptr;
   }
 | O_BEGIN MEMBERS O_END {
-    $$ = (char *)malloc(sizeof(char)*(1+strlen($2)+1+1));
-    sprintf($$,"{%s}",$2);
+    $$ = nullptr;
   }
 ;
 MEMBERS: PAIR {
     $$ = $1;
   }
 | PAIR COMMA MEMBERS {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s,%s",$1,$3);
+    $$ = nullptr;
   }
 ;
 PAIR: STRING COLON VALUE {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s:%s",$1,$3);
+    $$ = nullptr;
   }
 ;
 ARRAY: A_BEGIN A_END {
-    $$ = (char *)malloc(sizeof(char)*(2+1));
-    sprintf($$,"[]");
+    $$ = nullptr;
   }
 | A_BEGIN ELEMENTS A_END {
-    $$ = (char *)malloc(sizeof(char)*(1+strlen($2)+1+1));
-    sprintf($$,"[%s]",$2);
+    $$ = nullptr;
 }
 ;
 ELEMENTS: VALUE {
     $$ = $1;
   }
 | VALUE COMMA ELEMENTS {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s,%s",$1,$3);
+    $$ = nullptr;
   }
 ;
 VALUE: STRING {$$=nullptr;//yylval;
@@ -92,9 +90,9 @@ VALUE: STRING {$$=nullptr;//yylval;
 }
 | OBJECT {$$=$1;}
 | ARRAY {$$=$1;}
-| TRUE {$$="true";}
-| FALSE {$$="false";}
-| NONE {$$="null";}
+| TRUE {$$=$1;}
+| FALSE {$$=$1;}
+| NONE {$$=$1;}
 ;
 %%
 int main()

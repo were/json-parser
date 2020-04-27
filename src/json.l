@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <stdio.h>
+
+#include "data.h"
+
 #include "json.tab.h"
 char *strclone(char *str);
 
@@ -26,23 +29,23 @@ DBL_QUOTE ["]
 
 {DBL_QUOTE}{DBL_QUOTE} |
 {DBL_QUOTE}{CHARS}{DBL_QUOTE} {
-    yylval.s = strclone(yytext);
+    yylval.s = new json::String(yytext);
     return STRING;
 };
 {NUMBER} {
-    yylval.s = strclone(yytext);
+    yylval.i = new json::Int(atol(yytext));
     return NUMBER;
 }
 TRUE {
-    yylval.i = 1;
+    yylval.b = new json::Bool(true);
     return TRUE;
 };
 FALSE {
-    yylval.i = 0;
+    yylval.b = new json::Bool(true);
     return FALSE;
 };
 NONE {
-    yylval.i = 0;
+    yylval.s = new json::String(yytext);
     return NONE;
 };
 \{ {
