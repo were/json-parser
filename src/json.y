@@ -1,12 +1,14 @@
 %code requires{
 
-#include "data.h"
-#include "visitor.h"
+#include "json/data.h"
+#include "json/visitor.h"
 #include <cstdint>
 
 struct params {
   json::BaseNode *data;
 };
+
+extern int yylineno;
 
 }
 
@@ -113,7 +115,7 @@ VALUE: STRING { $$=$1; }
 %%
 
 static void yyerror (params *p, const char *s) {
-  fprintf(stderr, "%s\n", s);
+  fprintf(stderr, "%d: %s\n", yylineno, s);
 }
 char *strconcat(char *str1, char *str2)
 {
