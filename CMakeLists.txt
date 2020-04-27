@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(JsonParser)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
