@@ -25,7 +25,6 @@ int yywrap() {
    return 1;
 }
 
-char *strconcat(char *str1, char *str2);
 static void yyerror(params *p, const char *);
 int yylex();
 
@@ -53,20 +52,20 @@ int yylex();
 
 %%
 START: ARRAY {
-  $$ = p->data = $1;
-}
-| OBJECT {
-  $$ = p->data = $1;
-}
-;
+         $$ = p->data = $1;
+       }
+       | OBJECT {
+         $$ = p->data = $1;
+       };
+
 OBJECT: O_BEGIN O_END {
-    plain::Object empty;
-    $$ = new json::Object(empty);
-  }
-| O_BEGIN MEMBERS O_END {
-    $$ = $2;
-  }
-;
+        plain::Object empty;
+        $$ = new json::Object(empty);
+      }
+      | O_BEGIN MEMBERS O_END {
+        $$ = $2;
+      };
+
 MEMBERS: PAIR {
          $$ = $1;
        }
@@ -79,8 +78,8 @@ MEMBERS: PAIR {
          (*mems)[elem.first] = elem.second;
          $$ = $1;
          delete $3;
-       }
-;
+       };
+
 PAIR: STRING COLON VALUE {
       plain::Object obj;
       obj[*$1->As<std::string>()] = $3;
@@ -116,13 +115,4 @@ VALUE: STRING { $$=$1; }
 
 static void yyerror (params *p, const char *s) {
   fprintf(stderr, "%d: %s\n", yylineno, s);
-}
-char *strconcat(char *str1, char *str2)
-{
-    int len1 = strlen(str1);
-    int len2 = strlen(str2);
-    char *str3 = (char *)malloc(sizeof(char)*(len1+len2+1));
-    strcpy(str3,str1);
-    strcpy(&(str3[len1]),str2);
-    return str3;
 }
