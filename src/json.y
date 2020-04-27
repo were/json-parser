@@ -1,3 +1,5 @@
+%define api.prefix {JSON}
+
 %code requires{
 
 #include "json/data.h"
@@ -8,7 +10,7 @@ struct params {
   json::BaseNode *data;
 };
 
-extern int yylineno;
+extern int JSONlineno;
 
 }
 
@@ -21,12 +23,12 @@ extern int yylineno;
 #include <stdlib.h>
 
 extern "C"
-int yywrap() {
+int JSONwrap() {
    return 1;
 }
 
-static void yyerror(params *p, const char *);
-int yylex();
+static void JSONerror(params *p, const char *);
+int JSONlex();
 
 %}
 
@@ -119,6 +121,6 @@ VALUE: STRING { $$=$1; }
      ;
 %%
 
-static void yyerror (params *p, const char *s) {
-  fprintf(stderr, "%d: %s\n", yylineno, s);
+static void JSONerror (params *p, const char *s) {
+  fprintf(stderr, "%d: %s\n", JSONlineno, s);
 }
