@@ -20,13 +20,19 @@ namespace json {
 
 class BaseVisitor;
 
+/*! \brief The basic class of JSON data structure */
 class BaseNode {
  public:
+  /*! \brief The virtual method for the visitor pattern */
   virtual void Accept(BaseVisitor *) = 0;
+  /*! \brief The method for data cast */
   template<typename T> inline T* As();
+  /*! \brief RTTI required */
   virtual ~BaseNode() {}
 };
 
+/*! \brief The derived class of JSON data structure. This template will
+           be instantiated in visitor because of the C++ constraints */
 template<typename T>
 class Value : public BaseNode {
  public:
