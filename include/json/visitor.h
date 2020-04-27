@@ -24,12 +24,13 @@ struct BaseVisitor {
   virtual void Visit(Value<std::string> *node) {}
 };
 
-template<> inline void Value<int64_t>::Accept(BaseVisitor *v) { v->Visit(this); }
+/* Visitor specialization */
 template<> inline void Value<bool>::Accept(BaseVisitor *v) { v->Visit(this); }
+template<> inline void Value<double>::Accept(BaseVisitor *v) { v->Visit(this); }
+template<> inline void Value<int64_t>::Accept(BaseVisitor *v) { v->Visit(this); }
+template<> inline void Value<std::string>::Accept(BaseVisitor *v) { v->Visit(this); }
 template<> inline void Value<plain::Array>::Accept(BaseVisitor *v) { v->Visit(this); }
 template<> inline void Value<plain::Object>::Accept(BaseVisitor *v) { v->Visit(this); }
-template<> inline void Value<double>::Accept(BaseVisitor *v) { v->Visit(this); }
-template<> inline void Value<std::string>::Accept(BaseVisitor *v) { v->Visit(this); }
 
 /*! `using' will instantiate the template, which is conflict with
  *   template specialization */
@@ -79,4 +80,5 @@ struct JSONPrinter : BaseVisitor {
     os << '"' << (*node->As<std::string>()) << '"';
   }
 };
+
 }

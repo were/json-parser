@@ -70,6 +70,12 @@ MEMBERS: PAIR {
          $$ = $1;
        }
        | MEMBERS COMMA PAIR {
+         // TODO(@were): This may cause a moderate memory leakage.
+         //              Since I only supported a recursive destructor for now.
+         //              I cannot delete $3 without a ref count --- it is kinda
+         //              terrible to have a three-level pointer --- the underlying
+         //              data, the ref, and converting the ref to a pointer POD.
+         //              A quick hack to this is to write a duplication visitor.
          auto *pr = $3->As<plain::Object>();
          assert(pr && pr->size() == 1);
          auto &elem = *pr->begin();
@@ -77,13 +83,13 @@ MEMBERS: PAIR {
          assert(mems);
          (*mems)[elem.first] = elem.second;
          $$ = $1;
-         delete $3;
        };
 
 PAIR: STRING COLON VALUE {
       plain::Object obj;
       obj[*$1->As<std::string>()] = $3;
       $$ = new json::Object(obj);
+      delete $1;
     };
 
 ARRAY: A_BEGIN A_END {

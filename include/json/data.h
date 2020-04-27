@@ -28,7 +28,7 @@ class BaseNode {
   /*! \brief The method for data cast */
   template<typename T> inline T* As();
   /*! \brief RTTI required */
-  virtual ~BaseNode() {}
+  virtual inline ~BaseNode() {}
 };
 
 /*! \brief The derived class of JSON data structure. This template will
@@ -38,7 +38,7 @@ class Value : public BaseNode {
  public:
   using DataType = T;
   Value(const T &data_) : data(data_) {}
-  ~Value() {}
+  inline ~Value() override;
   friend class BaseNode;
   inline void Accept(BaseVisitor *visitor) override;
  private:
@@ -52,5 +52,22 @@ inline T* BaseNode::As() {
   }
   return nullptr;
 }
+
+/* Destructor specialization */
+template<> inline Value<bool>::~Value() {}
+template<> inline Value<int64_t>::~Value() {}
+template<> inline Value<double>::~Value() {}
+template<> inline Value<std::string>::~Value() {}
+template<> inline Value<plain::Array>::~Value() {
+  for (auto &elem : data) {
+    delete elem;
+  }
+}
+template<> inline Value<plain::Object>::~Value() {
+  for (auto &elem : data) {
+    delete elem.second;
+  }
+}
+
 
 }
