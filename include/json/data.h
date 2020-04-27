@@ -35,16 +35,6 @@ class Value : public BaseNode {
   ~Value() {}
   friend class BaseNode;
   inline void Accept(BaseVisitor *visitor) override;
-};
-
-template<typename T>
-class Value : public BaseNode {
- public:
-  using DataType = T;
-  Value(const T &data_) : data(data_) {}
-  ~Value() {}
-  friend class BaseNode;
-  inline void Accept(BaseVisitor *visitor) override;
  private:
   DataType data;
 };
