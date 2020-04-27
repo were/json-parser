@@ -3,14 +3,14 @@
 #include <cstdint>
 #include <stdio.h>
 
-#include "data.h"
-#include "visitor.h"
+#include "json/data.h"
+#include "json/visitor.h"
 
+extern int yylineno;
 #include "json.tab.h"
 char *strclone(char *str);
 
 %}
-
 DIGIT1to9 [1-9]
 DIGIT [0-9]
 DIGITS {DIGIT}+
@@ -39,11 +39,11 @@ DBL_QUOTE ["]
     yylval.i = new json::Int(atol(yytext));
     return NUMBER;
 }
-TRUE {
+true {
     yylval.b = new json::Bool(true);
     return TRUE;
 };
-FALSE {
+false {
     yylval.b = new json::Bool(true);
     return FALSE;
 };
@@ -76,10 +76,6 @@ NONE {
 
 [ \t\n]+ /* ignore whitespace */;
 
-. {
-    printf("Unexpected: %c\nExiting...\n",*yytext);
-    exit(0);
-}
 %%
 char *strclone(char *str) {
   int len = strlen(str);
