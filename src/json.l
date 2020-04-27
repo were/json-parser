@@ -1,3 +1,5 @@
+%option prefix="JSON"
+
 %{
 
 #include <cstdint>
@@ -6,11 +8,12 @@
 #include "json/data.h"
 #include "json/visitor.h"
 
-extern int yylineno;
+extern int JSONlineno;
 #include "json.tab.h"
 char *strclone(char *str);
 
 %}
+
 DIGIT1to9 [1-9]
 DIGIT [0-9]
 DIGITS {DIGIT}+
@@ -30,25 +33,25 @@ DBL_QUOTE ["]
 
 {DBL_QUOTE}{DBL_QUOTE} |
 {DBL_QUOTE}{CHARS}{DBL_QUOTE} {
-    int len = strlen(yytext) - 2;
-    std::string str(yytext + 1, yytext + 1 + len);
-    yylval.s = new json::String(str);
+    int len = strlen(JSONtext) - 2;
+    std::string str(JSONtext + 1, JSONtext + 1 + len);
+    JSONlval.s = new json::String(str);
     return STRING;
 };
 {NUMBER} {
-    yylval.i = new json::Int(atol(yytext));
+    JSONlval.i = new json::Int(atol(JSONtext));
     return NUMBER;
 }
 true {
-    yylval.b = new json::Bool(true);
+    JSONlval.b = new json::Bool(true);
     return TRUE;
 };
 false {
-    yylval.b = new json::Bool(true);
+    JSONlval.b = new json::Bool(true);
     return FALSE;
 };
 NONE {
-    yylval.s = new json::String(yytext);
+    JSONlval.s = new json::String(JSONtext);
     return NONE;
 };
 \{ {
