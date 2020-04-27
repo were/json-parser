@@ -1,84 +1,119 @@
+%code requires{
+
+#include "data.h"
+#include "visitor.h"
+#include <cstdint>
+
+struct params {
+  json::BaseNode *data;
+};
+
+}
+
 %{
-    #include<stdio.h>
-    #include<string.h>
-    #include<stdlib.h>
-    #define YYSTYPE char*
-    char *strconcat(char *str1, char *str2);
+
+#include "json.tab.h"
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+#include <stdlib.h>
+
+extern "C"
+int yywrap() {
+   return 1;
+}
+
+char *strconcat(char *str1, char *str2);
+static void yyerror(params *p, const char *);
+int yylex();
+
 %}
-%token NUMBER
-%token STRING
-%token true false null
+
+%union {
+  json::Int *i;
+  json::Bool *b;
+  json::String *s;
+  json::BaseNode *base;
+  json::Array *a;
+  json::Object *o;
+}
+
+%token<s> STRING NONE
+%token<i> NUMBER
+%token<b> TRUE FALSE
+%type<base> START VALUE
+%type<a> ELEMENTS ARRAY
+%type<o> PAIR OBJECT MEMBERS
 %left O_BEGIN O_END A_BEGIN A_END
 %left COMMA
 %left COLON
+%parse-param { struct params *p }
+
 %%
 START: ARRAY {
-    printf("%s",$1);
-  }
+  $$ = p->data = $1;
+}
 | OBJECT {
-    printf("%s",$1);
-  }
+  $$ = p->data = $1;
+}
 ;
 OBJECT: O_BEGIN O_END {
-    $$ = "{}";
+    plain::Object empty;
+    $$ = new json::Object(empty);
   }
 | O_BEGIN MEMBERS O_END {
-    $$ = (char *)malloc(sizeof(char)*(1+strlen($2)+1+1));
-    sprintf($$,"{%s}",$2);
+    $$ = $2;
   }
 ;
 MEMBERS: PAIR {
-    $$ = $1;
-  }
-| PAIR COMMA MEMBERS {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s,%s",$1,$3);
-  }
+         $$ = $1;
+       }
+       | MEMBERS COMMA PAIR {
+         auto *pr = $3->As<plain::Object>();
+         assert(pr && pr->size() == 1);
+         auto &elem = *pr->begin();
+         auto *mems = $1->As<plain::Object>();
+         assert(mems);
+         (*mems)[elem.first] = elem.second;
+         $$ = $1;
+         delete $3;
+       }
 ;
 PAIR: STRING COLON VALUE {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s:%s",$1,$3);
-  }
-;
+      plain::Object obj;
+      obj[*$1->As<std::string>()] = $3;
+      $$ = new json::Object(obj);
+    };
+
 ARRAY: A_BEGIN A_END {
-    $$ = (char *)malloc(sizeof(char)*(2+1));
-    sprintf($$,"[]");
-  }
-| A_BEGIN ELEMENTS A_END {
-    $$ = (char *)malloc(sizeof(char)*(1+strlen($2)+1+1));
-    sprintf($$,"[%s]",$2);
-}
-;
+       std::vector<json::BaseNode*> empty;
+       $$ = new json::Array(empty);
+     }
+     | A_BEGIN ELEMENTS A_END {
+       $$ = $2;
+     };
+
 ELEMENTS: VALUE {
-    $$ = $1;
-  }
-| VALUE COMMA ELEMENTS {
-    $$ = (char *)malloc(sizeof(char)*(strlen($1)+1+strlen($3)+1));
-    sprintf($$,"%s,%s",$1,$3);
-  }
-;
-VALUE: STRING {$$=yylval;}
-| NUMBER {$$=yylval;}
-| OBJECT {$$=$1;}
-| ARRAY {$$=$1;}
-| true {$$="true";}
-| false {$$="false";}
-| null {$$="null";}
-;
+          std::vector<json::BaseNode*> a{$1};
+          $$ = new json::Array(a);
+        }
+        | ELEMENTS COMMA VALUE {
+          $1->As<plain::Array>()->push_back($3);
+          $$ = $1;
+        };
+
+VALUE: STRING { $$=$1; }
+     | NUMBER { $$=$1; }
+     | OBJECT { $$=$1; }
+     | ARRAY  { $$=$1; }
+     | TRUE   { $$=$1; }
+     | FALSE  { $$=$1; }
+     | NONE   { $$=$1; }
+     ;
 %%
-int main()
-{
-   printf("\n");
-   yyparse();
-   printf("\n");
-   return 0;
-}
-int yywrap()
-{
-   return 1;
-}
-void yyerror (char const *s) {
-   fprintf (stderr, "%s\n", s);
+
+static void yyerror (params *p, const char *s) {
+  fprintf(stderr, "%s\n", s);
 }
 char *strconcat(char *str1, char *str2)
 {
