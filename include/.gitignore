@@ -1,2 +1,2 @@
 *.lex.h
-*.yy.h
+*.tab.h
