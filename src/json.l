@@ -11,6 +11,9 @@ extern int yylineno;
 char *strclone(char *str);
 
 %}
+
+%option prefix="JSON"
+
 DIGIT1to9 [1-9]
 DIGIT [0-9]
 DIGITS {DIGIT}+
