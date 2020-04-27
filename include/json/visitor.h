@@ -5,6 +5,7 @@
 
 namespace json {
 
+/* \brief The visitor class for the visitor pattern */
 struct BaseVisitor {
   BaseVisitor() {}
   virtual void Visit(Value<plain::Object> *node) {
@@ -30,6 +31,8 @@ template<> inline void Value<plain::Object>::Accept(BaseVisitor *v) { v->Visit(t
 template<> inline void Value<double>::Accept(BaseVisitor *v) { v->Visit(this); }
 template<> inline void Value<std::string>::Accept(BaseVisitor *v) { v->Visit(this); }
 
+/*! `using' will instantiate the template, which is conflict with
+ *   template specialization */
 using Object = Value<plain::Object>;
 using Int = Value<int64_t>;
 using Float = Value<double>;
@@ -37,6 +40,7 @@ using Bool = Value<bool>;
 using String = Value<std::string>;
 using Array = Value<plain::Array>;
 
+/*! \brief The printer visitor */
 struct JSONPrinter : BaseVisitor {
   std::ostream &os;
   JSONPrinter(std::ostream &os_) : os(os_) {}
