@@ -9,5 +9,6 @@ int main(int argc, char *argv[]) {
    yyparse(&p);
    json::JSONPrinter printer(std::cout);
    p.data->Accept(&printer);
+   delete p.data;
    return 0;
 }
