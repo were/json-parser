@@ -6,11 +6,11 @@ find_package(BISON REQUIRED)
 
 FLEX_TARGET(DFG_LEXER ${CMAKE_SOURCE_DIR}/src/json.l
   ${CMAKE_SOURCE_DIR}/src/json.lex.cc
-  DEFINES_FILE ${CMAKE_SOURCE_DIR}/include/json.lex.h)
+  DEFINES_FILE ${CMAKE_SOURCE_DIR}/src/json.lex.h)
 
 BISON_TARGET(DFG_PARSER ${CMAKE_SOURCE_DIR}/src/json.y
   ${CMAKE_SOURCE_DIR}/src/json.tab.cc
-  DEFINES_FILE ${CMAKE_SOURCE_DIR}/include/json.tab.h)
+  DEFINES_FILE ${CMAKE_SOURCE_DIR}/src/json.tab.h)
 
 add_library(json
   ${CMAKE_SOURCE_DIR}/src/json.lex.cc
