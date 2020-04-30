@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(JsonParser)
 
+set(CMAKE_CXX_FLAGS "-Wall")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(FLEX REQUIRED)

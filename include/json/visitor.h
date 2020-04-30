@@ -71,7 +71,7 @@ struct JSONPrinter : BaseVisitor {
     os << *node->As<int64_t>();
   }
   virtual void Visit(Bool *node) override {
-    os << (*node->As<bool>()) ? "\"true\"" : "\"false\"";
+    os << ((*node->As<bool>()) ? "\"true\"" : "\"false\"");
   }
   virtual void Visit(Float *node) {
     os << (*node->As<double>());
