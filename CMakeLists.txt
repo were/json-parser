@@ -17,7 +17,8 @@ BISON_TARGET(DFG_PARSER ${CMAKE_CURRENT_SOURCE_DIR}/src/json.y
 
 add_library(json
   ${CMAKE_CURRENT_SOURCE_DIR}/src/json.lex.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/json.tab.cc)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/json.tab.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/printer.cc)
 
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp)
 

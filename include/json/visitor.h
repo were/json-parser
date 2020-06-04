@@ -43,42 +43,17 @@ using Array = Value<plain::Array>;
 
 /*! \brief The printer visitor */
 struct JSONPrinter : BaseVisitor {
+  int indent{0};
   std::ostream &os;
-  JSONPrinter(std::ostream &os_) : os(os_) {}
+  void PrintIndent();
+  void Visit(Object *node) override;
+  void Visit(Array *node) override;
+  void Visit(Int *node) override;
+  void Visit(Bool *node) override;
+  void Visit(Float *node) override;
+  void Visit(String *node) override;
 
-  void Visit(Object *node) override {
-    os << "{";
-    bool first = true;
-    for (auto &elem : *node->As<plain::Object>()) {
-      if (!first) os << ",\n";
-      os << '"' << elem.first << "\":";
-      elem.second->Accept(this);
-      first = false;
-    }
-    os << "}\n";
-  }
-  void Visit(Array *node) override {
-    bool first = true;
-    os << "[";
-    for (auto &elem : *node->As<plain::Array>()) {
-      if (!first) os << ", ";
-      elem->Accept(this);
-      first = false;
-    }
-    os << "]\n";
-  }
-  virtual void Visit(Int *node) override {
-    os << *node->As<int64_t>();
-  }
-  virtual void Visit(Bool *node) override {
-    os << ((*node->As<bool>()) ? "\"true\"" : "\"false\"");
-  }
-  virtual void Visit(Float *node) {
-    os << (*node->As<double>());
-  }
-  virtual void Visit(String *node) {
-    os << '"' << (*node->As<std::string>()) << '"';
-  }
+  JSONPrinter(std::ostream &os_) : os(os_) {}
 };
 
 }
