@@ -25,3 +25,7 @@ add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp)
 include_directories(main ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(main json)
 target_compile_options(main PRIVATE "-g")
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
+install(TARGETS json DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/)
