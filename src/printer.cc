@@ -8,7 +8,7 @@ void JSONPrinter::PrintIndent() {
 
 void JSONPrinter::Visit(Object *node) {
 
-  os << "\n" << std::string(indent, ' ') << "{\n";
+  os << "{\n";
   indent += 2;
   bool first = true;
   for (auto &elem : *node->As<plain::Object>()) {
