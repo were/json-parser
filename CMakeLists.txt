@@ -21,11 +21,11 @@ add_library(json
   ${CMAKE_CURRENT_SOURCE_DIR}/src/printer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/data.cc)
 
-add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp)
+add_executable(fixed-point ${CMAKE_CURRENT_SOURCE_DIR}/test/fixed-point.cpp)
 
-include_directories(main ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(main json)
-target_compile_options(main PRIVATE "-g")
+include_directories(fixed-point ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(fixed-point json)
+target_compile_options(fixed-point PRIVATE "-g")
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)

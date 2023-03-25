@@ -8,6 +8,7 @@
 
 struct params {
   Json::Value data;
+  std::vector<std::string> literals;
 };
 
 extern int JSONlineno;
