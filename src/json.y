@@ -2,12 +2,12 @@
 
 %code requires{
 
-#include "json/data.h"
-#include "json/visitor.h"
+#include <iostream>
 #include <cstdint>
+#include "json/data.h"
 
 struct params {
-  json::BaseNode *data;
+  Json::Value data;
 };
 
 extern int JSONlineno;
@@ -21,6 +21,7 @@ extern int JSONlineno;
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 extern "C"
 int JSONwrap() {
@@ -33,92 +34,101 @@ int JSONlex();
 %}
 
 %union {
-  json::Int *i;
-  json::Bool *b;
-  json::String *s;
-  json::BaseNode *base;
-  json::Array *a;
-  json::Object *o;
+  Json::ValueBase *value;
+  std::string *s;
+
+  struct pair_t {
+    std::string *key;
+    Json::ValueBase *value;
+  } ky_pair;
+  int64_t i64;
 }
 
-%token<s> STRING NONE
-%token<i> NUMBER
-%token<b> TRUE FALSE
-%type<base> START VALUE
-%type<a> ELEMENTS ARRAY
-%type<o> PAIR OBJECT MEMBERS
+%token NONE
+%token<i64> NUMBER
+%token<i64> TRUE FALSE
+%token<s> STRING
 %left O_BEGIN O_END A_BEGIN A_END
 %left COMMA
 %left COLON
+
+%type<value> start array object value elements members
+%type<ky_pair> pair
+
 %parse-param { struct params *p }
 
 %%
-START: ARRAY {
-         $$ = p->data = $1;
-       }
-       | OBJECT {
-         $$ = p->data = $1;
-       };
+start: array {
+  $$ = $1;
+  p->data = Json::Value($1);
+}
+| object {
+  $$ = $1;
+  p->data = Json::Value($1);
+};
 
-OBJECT: O_BEGIN O_END {
-        plain::Object empty;
-        $$ = new json::Object(empty);
-      }
-      | O_BEGIN MEMBERS O_END {
-        $$ = $2;
-      };
+object: O_BEGIN O_END {
+  $$ = new Json::ValueObject({});
+}
+| O_BEGIN members O_END {
+  $$ = $2;
+};
 
-MEMBERS: PAIR {
-         $$ = $1;
-       }
-       | MEMBERS COMMA PAIR {
-         // TODO(@were): This may cause a moderate memory leakage.
-         //              Since I only supported a recursive destructor for now.
-         //              I cannot delete $3 without a ref count --- it is kinda
-         //              terrible to have a three-level pointer --- the underlying
-         //              data, the ref, and converting the ref to a pointer POD.
-         //              A quick hack to this is to write a duplication visitor.
-         auto *pr = $3->As<plain::Object>();
-         assert(pr && pr->size() == 1);
-         auto &elem = *pr->begin();
-         auto *mems = $1->As<plain::Object>();
-         assert(mems);
-         (*mems)[elem.first] = elem.second;
-         $$ = $1;
-       };
+members: pair {
+  std::map<std::string, Json::Value> data;
+  data[*($1.key)] = Json::Value($1.value);
+  delete $1.key;
+  $$ = new Json::ValueObject(data);
+}
+| members COMMA pair {
+  std::string ky(*$3.key);
+  static_cast<Json::ValueObject*>($1)->val[ky] = Json::Value($3.value);
+  delete $3.key;
+  $$ = $1;
+};
 
-PAIR: STRING COLON VALUE {
-      plain::Object obj;
-      obj[*$1->As<std::string>()] = $3;
-      $$ = new json::Object(obj);
-      delete $1;
-    };
+pair: STRING COLON value {
+  $$.key = $1;
+  $$.value = $3;
+};
 
-ARRAY: A_BEGIN A_END {
-       std::vector<json::BaseNode*> empty;
-       $$ = new json::Array(empty);
-     }
-     | A_BEGIN ELEMENTS A_END {
-       $$ = $2;
-     };
+array: A_BEGIN A_END {
+  $$ = new Json::ValueArray({});
+}
+| A_BEGIN elements A_END {
+  $$ = $2;
+};
 
-ELEMENTS: VALUE {
-          std::vector<json::BaseNode*> a{$1};
-          $$ = new json::Array(a);
-        }
-        | ELEMENTS COMMA VALUE {
-          $1->As<plain::Array>()->push_back($3);
-          $$ = $1;
-        };
+elements: value {
+  $$ = new Json::ValueArray({Json::Value($1)});
+}
+| elements COMMA value {
+  static_cast<Json::ValueArray*>($1)->val.emplace_back($3);
+};
 
-VALUE: STRING { $$=$1; }
-     | NUMBER { $$=$1; }
-     | OBJECT { $$=$1; }
-     | ARRAY  { $$=$1; }
-     | TRUE   { $$=$1; }
-     | FALSE  { $$=$1; }
-     | NONE   { $$=$1; }
-     ;
+value: STRING {
+  $$ = new Json::ValueString(*$1);
+  delete $1;
+}
+| NUMBER {
+  $$ = new Json::ValueInt($1);
+}
+| object {
+  $$ = $1;
+}
+| array  {
+  $$ = $1;
+}
+| TRUE   {
+  $$ = new Json::ValueBool((bool) $1);
+}
+| FALSE  {
+  $$ = new Json::ValueBool((bool) $1);
+}
+| NONE   {
+  $$ = new Json::ValueNull(-1);
+}
+;
 %%
 
 static void JSONerror (params *p, const char *s) {

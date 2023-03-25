@@ -1,45 +1,82 @@
-#include "json/visitor.h"
+#include <cassert>
+#include <memory>
+#include <ostream>
 
-namespace json {
+#include "json/printer.h"
+#include "json/data.h"
 
-void JSONPrinter::PrintIndent() { os << std::string(indent, ' '); }
+namespace Json {
 
-void JSONPrinter::Visit(Object* node) {
+#define INDENT std::string(indent, ' ')
+
+std::map<int, std::function<void(Printer *, const Value &)>>
+Printer::initDispatcher() {
+  std::map<int, std::function<void(Printer *, const Value &)>> res;
+#define VTYPE_MACRO(ty, ...) \
+  do { \
+    auto f = [] (Printer *p, const Value &value) -> void { \
+      assert(value.data->code == ValueBase::k##ty); \
+      p->print(*std::static_pointer_cast<Value##ty>(value.data)); \
+    }; \
+    res[ValueBase::k##ty] = f; \
+  } while (false);
+#include "json/vtypes.inc"
+#undef VTYPE_MACRO
+  return res;
+}
+
+Printer::Printer(std::ostream &os_) : os(os_) {}
+
+std::ostream &operator<<(std::ostream &os, const Value &value) {
+  Printer printer(os);
+  printer(value);
+  return os;
+}
+
+void Printer::operator()(const Value &value) {
+  static auto dispatcher = initDispatcher();
+  dispatcher[value.data->code](this, value);
+}
+
+void Printer::print(const ValueObject &obj) {
   os << "{\n";
   indent += 2;
   bool first = true;
-  for (auto& elem : *node->As<plain::Object>()) {
+  for (auto& elem : obj.val) {
     if (!first) os << ",\n";
-    PrintIndent();
+    os << INDENT;
     os << '"' << elem.first << '"' << ": ";
-    elem.second->Accept(this);
+    (*this)(elem.second);
     first = false;
   }
   os << "\n";
   indent -= 2;
-  PrintIndent();
-  os << "}";
+  os << INDENT << "}";
 }
 
-void JSONPrinter::Visit(Array* node) {
+void Printer::print(const ValueArray &array) {
   bool first = true;
   os << "[";
-  for (auto& elem : *node->As<plain::Array>()) {
+  for (auto& elem : array.val) {
     if (!first) os << ", ";
-    elem->Accept(this);
+    (*this)(elem);
     first = false;
   }
   os << "]";
 }
 
-void JSONPrinter::Visit(Int* node) { os << *node->As<int64_t>(); }
+void Printer::print(const ValueInt &vi) { os << vi.val; }
 
-void JSONPrinter::Visit(Bool* node) {
-  os << ((*node->As<bool>()) ? "\"true\"" : "\"false\"");
+void Printer::print(const ValueBool &b) {
+  os << (b.val ? "\"true\"" : "\"false\"");
 }
 
-void JSONPrinter::Visit(Float* node) { os << (*node->As<double>()); }
+void Printer::print(const ValueDouble &dbl) { os << dbl.val; }
 
-void JSONPrinter::Visit(String* node) { os << '"' << (*node->As<std::string>()) << '"'; }
+void Printer::print(const ValueString &str) { os << '"' << str.val << '"'; }
+
+void Printer::print(const ValueNull &null) { os << "null"; }
+
+#undef INDENT
 
 }  // namespace json

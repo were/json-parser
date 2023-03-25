@@ -2,14 +2,13 @@
 
 %{
 
+#include <iostream>
 #include <cstdint>
 #include <stdio.h>
 
-#include "json/data.h"
-#include "json/visitor.h"
+#include "json.tab.h"
 
 extern int JSONlineno;
-#include "json.tab.h"
 char *strclone(char *str);
 
 %}
@@ -33,25 +32,23 @@ DBL_QUOTE ["]
 
 {DBL_QUOTE}{DBL_QUOTE} |
 {DBL_QUOTE}{CHARS}{DBL_QUOTE} {
-    int len = strlen(JSONtext) - 2;
-    std::string str(JSONtext + 1, JSONtext + 1 + len);
-    JSONlval.s = new json::String(str);
+    int len = strlen(JSONtext);
+    JSONlval.s = new std::string(JSONtext + 1, JSONtext + len - 1);
     return STRING;
 };
 {NUMBER} {
-    JSONlval.i = new json::Int(atol(JSONtext));
+    JSONlval.i64 = atol(JSONtext);
     return NUMBER;
 }
 true {
-    JSONlval.b = new json::Bool(true);
+    JSONlval.i64 = 1;
     return TRUE;
 };
 false {
-    JSONlval.b = new json::Bool(true);
+    JSONlval.i64 = 0;
     return FALSE;
 };
-NONE {
-    JSONlval.s = new json::String(JSONtext);
+"null" {
     return NONE;
 };
 \{ {
@@ -77,7 +74,10 @@ NONE {
     return COLON;
 };
 
-[ \t\n]+ /* ignore whitespace */;
+"\n" {
+}
+
+[ \t]+ /* ignore whitespace */;
 
 %%
 char *strclone(char *str) {
