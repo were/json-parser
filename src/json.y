@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <cstdint>
-#include "json/data.h"
+#include "json/value.h"
 
 struct params {
   Json::Value data;
@@ -127,7 +127,7 @@ value: STRING {
   $$ = new Json::ValueBool((bool) $1);
 }
 | NONE   {
-  $$ = new Json::ValueNull(-1);
+  $$ = new Json::ValueNull(nullptr);
 }
 ;
 %%

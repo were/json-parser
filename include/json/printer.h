@@ -4,7 +4,7 @@
 #include <ostream>
 #include <functional>
 
-#include "data.h"
+#include "json/value.h"
 
 namespace Json {
 
@@ -12,7 +12,7 @@ struct Printer {
   void operator()(const Value &value);
 #define VTYPE_MACRO(ty, ...) \
   void print(const Value##ty &);
-#include "vtype.inc"
+#include "json/vtypes.inc"
 #undef VTYPE_MACRO
 
   Printer(std::ostream &os);

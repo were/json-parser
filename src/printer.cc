@@ -1,9 +1,10 @@
 #include <cassert>
 #include <memory>
 #include <ostream>
+#include <type_traits>
 
 #include "json/printer.h"
-#include "json/data.h"
+#include "json/value.h"
 
 namespace Json {
 
@@ -15,10 +16,12 @@ Printer::initDispatcher() {
 #define VTYPE_MACRO(ty, ...) \
   do { \
     auto f = [] (Printer *p, const Value &value) -> void { \
-      assert(value.data->code == ValueBase::k##ty); \
+      assert(value.data->code == ValueBase::TypeCode::k##ty); \
       p->print(*std::static_pointer_cast<Value##ty>(value.data)); \
     }; \
-    res[ValueBase::k##ty] = f; \
+    auto code = static_cast<std::underlying_type_t<ValueBase::TypeCode>>( \
+      ValueBase::TypeCode::k##ty); \
+    res[code] = f; \
   } while (false);
 #include "json/vtypes.inc"
 #undef VTYPE_MACRO
@@ -35,7 +38,10 @@ std::ostream &operator<<(std::ostream &os, const Value &value) {
 
 void Printer::operator()(const Value &value) {
   static auto dispatcher = initDispatcher();
-  dispatcher[value.data->code](this, value);
+
+  auto code = static_cast<std::underlying_type_t<ValueBase::TypeCode>>(
+    value.data->code);
+  dispatcher[code](this, value);
 }
 
 void Printer::print(const ValueObject &obj) {

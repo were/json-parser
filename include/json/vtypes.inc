@@ -1,4 +1,4 @@
-VTYPE_MACRO(Null, int)
+VTYPE_MACRO(Null, std::nullptr_t)
 VTYPE_MACRO(Bool, bool)
 VTYPE_MACRO(Int, int)
 VTYPE_MACRO(Double, double)
