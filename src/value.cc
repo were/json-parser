@@ -247,11 +247,11 @@ Value::iterator::iterator(const Value::iterator &other) {
 
 
 Value::iterator Value::begin() {
-  if (ValueBase::TypeCode::kObject == data->code) {
+  if (ValueBase::TypeCode::kArray == data->code) {
     auto &vec = std::static_pointer_cast<ValueArray>(data)->val;
     return iterator(vec.begin());
   }
-  if (ValueBase::TypeCode::kArray == data->code) {
+  if (ValueBase::TypeCode::kObject == data->code) {
     auto &m = std::static_pointer_cast<ValueObject>(data)->val;
     return iterator(m.begin());
   }
@@ -259,11 +259,11 @@ Value::iterator Value::begin() {
 }
 
 Value::iterator Value::end() {
-  if (ValueBase::TypeCode::kObject == data->code) {
+  if (ValueBase::TypeCode::kArray == data->code) {
     auto &vec = std::static_pointer_cast<ValueArray>(data)->val;
     return iterator(vec.end());
   }
-  if (ValueBase::TypeCode::kArray == data->code) {
+  if (ValueBase::TypeCode::kObject == data->code) {
     auto &m = std::static_pointer_cast<ValueObject>(data)->val;
     return iterator(m.end());
   }
