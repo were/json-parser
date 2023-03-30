@@ -25,6 +25,12 @@ int Value::asInt64() {
   return x;
 }
 
+double Value::asDouble() {
+  assert(data->code == ValueBase::TypeCode::kDouble);
+  auto &x = std::static_pointer_cast<ValueDouble>(data)->val;
+  return x;
+}
+
 bool Value::asBool() {
   assert(data->code == ValueBase::TypeCode::kBool);
   auto &x = std::static_pointer_cast<ValueInt>(data)->val;

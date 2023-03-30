@@ -43,10 +43,12 @@ int JSONlex();
     Json::ValueBase *value;
   } ky_pair;
   int64_t i64;
+  double d;
 }
 
 %token NONE
-%token<i64> NUMBER
+%token<i64> INT
+%token<d> NUMBER
 %token<i64> TRUE FALSE
 %token<s> STRING
 %left O_BEGIN O_END A_BEGIN A_END
@@ -111,8 +113,12 @@ value: STRING {
   $$ = new Json::ValueString(*$1);
   delete $1;
 }
-| NUMBER {
+| INT {
+  std::cout << $1 << std::endl;
   $$ = new Json::ValueInt($1);
+}
+| NUMBER {
+  $$ = new Json::ValueDouble($1);
 }
 | object {
   $$ = $1;

@@ -1,0 +1,16 @@
+{
+    "string": "Hello There",
+    "boolean": true,
+    "number": 123,
+    "double": 123.456,
+    "array": [
+        "one",
+        "two",
+        "three"
+    ],
+    "object": {
+        "a": "b",
+        "c": "d",
+        "e": "f"
+    }
+}
