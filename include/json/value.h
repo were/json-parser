@@ -45,6 +45,7 @@ struct Value {
   int asInt();
   int asInt64();
   bool asBool();
+  double asDouble();
   const std::string &asString();
   /*!
    * \brief If this is a certain instance.

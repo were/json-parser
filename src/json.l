@@ -21,7 +21,7 @@ FRAC [.]{DIGITS}
 EXP {E}{DIGITS}
 E [eE][+-]?
 HEX_DIGIT [0-9a-f]
-NUMBER {INT}|{INT}{FRAC}|{INT}{EXP}|{INT}{FRAC}{EXP}
+NUMBER {INT}{FRAC}|{INT}{EXP}|{INT}{FRAC}{EXP}
 UNESCAPEDCHAR [ -!#-\[\]-~]
 ESCAPEDCHAR \\["\\bfnrt/]
 UNICODECHAR \\u{HEX_DIGIT}{HEX_DIGIT}{HEX_DIGIT}{HEX_DIGIT}
@@ -36,10 +36,14 @@ DBL_QUOTE ["]
     JSONlval.s = new std::string(JSONtext + 1, JSONtext + len - 1);
     return STRING;
 };
-{NUMBER} {
+{INT} {
     JSONlval.i64 = atol(JSONtext);
-    return NUMBER;
+    return INT;
 }
+{NUMBER} {
+    JSONlval.d = atof(JSONtext);
+    return NUMBER;
+};
 true {
     JSONlval.i64 = 1;
     return TRUE;
