@@ -123,6 +123,19 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  {
+    auto object = p.data["object"];
+    int count = 0;
+    auto it = object.begin();
+    for (; it != object.end(); ++it) {
+      count++;
+    }
+    if (count != 3) {
+      std::cerr << "object member is not size 3" << std::endl;
+      return 1;
+    }
+  }
+
   return 0;
 }
 
