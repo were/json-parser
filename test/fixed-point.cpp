@@ -6,6 +6,7 @@
 
 void yyrestart(FILE*);
 
+// f(f(x))
 int main(int argc, char* argv[]) {
   params p;
   JSONrestart(fopen(argv[1], "r"));
@@ -13,3 +14,4 @@ int main(int argc, char* argv[]) {
   std::cout << p.data << std::endl;
   return 0;
 }
+
