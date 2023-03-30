@@ -114,7 +114,6 @@ value: STRING {
   delete $1;
 }
 | INT {
-  std::cout << $1 << std::endl;
   $$ = new Json::ValueInt($1);
 }
 | NUMBER {

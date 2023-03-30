@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <iterator>
 #include <memory>
 #include <iostream>
@@ -168,6 +169,7 @@ int Value::size() {
     return m.size();
   }
   assert(false);
+  abort();
 }
 
 bool Value::empty() {
@@ -213,6 +215,7 @@ Value &Value::iterator::operator*() const {
     break;
   }
   assert(false && "null iterator");
+  abort();
 }
 
 bool Value::iterator::operator!=(const iterator &other) {
