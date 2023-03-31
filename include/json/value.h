@@ -43,7 +43,7 @@ struct Value {
    * \brief Convert it to specific data type.
    */
   int asInt();
-  int asInt64();
+  int64_t asInt64();
   bool asBool();
   double asDouble();
   const std::string &asString();

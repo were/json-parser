@@ -72,6 +72,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  if (!p.data.isMember("number64")) {
+    std::cerr << "number member not found" << std::endl;
+    return 1;
+  } else if (!p.data["number64"].isInt()) {
+    std::cerr << "number member is not number" << std::endl;
+    return 1;
+  } else if (p.data["number64"].asInt64() != 1099511627776) {
+    std::cerr << "number member is not 1099511627776: " << p.data["number64"].asInt64() << std::endl;
+    return 1;
+  }
+
   if (!p.data.isMember("double")) {
     std::cerr << "double member not found" << std::endl;
     return 1;
