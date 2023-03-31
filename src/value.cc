@@ -20,7 +20,7 @@ int Value::asInt() {
 /*!
  * \brief Convert it to specific data type.
  */
-int Value::asInt64() {
+int64_t Value::asInt64() {
   assert(data->code == ValueBase::TypeCode::kInt);
   auto &x = std::static_pointer_cast<ValueInt>(data)->val;
   return x;
@@ -34,7 +34,7 @@ double Value::asDouble() {
 
 bool Value::asBool() {
   assert(data->code == ValueBase::TypeCode::kBool);
-  auto &x = std::static_pointer_cast<ValueInt>(data)->val;
+  auto &x = std::static_pointer_cast<ValueBool>(data)->val;
   return x;
 }
 
