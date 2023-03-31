@@ -126,7 +126,6 @@ value: STRING {
   $$ = $1;
 }
 | TRUE   {
-  std::cout << (bool) $1 << std::endl;
   $$ = new Json::ValueBool((bool) $1);
 }
 | FALSE  {
