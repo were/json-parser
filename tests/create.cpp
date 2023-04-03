@@ -21,6 +21,19 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  Json::Value another(new Json::ValueObject({}));
+  another["string"] = "Hello There";
+  data["another"] = another;
+
+  if (!data.isMember("another")) {
+    std::cerr << "another member not found" << std::endl;
+    return 1;
+  } else if (!data["another"].isMember("string")) {
+    std::cerr << "another member has wrong value" << std::endl;
+    return 1;
+  }
+  std::cout << data << std::endl;
+
   return 0;
 }
 
