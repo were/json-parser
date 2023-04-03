@@ -25,22 +25,17 @@ add_library(minijson
   ${CMAKE_CURRENT_SOURCE_DIR}/src/printer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/value.cc)
 
-add_executable(fixed-point ${CMAKE_CURRENT_SOURCE_DIR}/test/fixed-point.cpp)
-
-# testing binary
-add_executable(basic_tests ${CMAKE_CURRENT_SOURCE_DIR}/test/basic.cpp)
-target_link_libraries(basic_tests minijson)
-
-# enable testing functionality
 enable_testing()
+file(GLOB_RECURSE TESTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp)
 
-add_test(NAME basic_tests
-         COMMAND $<TARGET_FILE:basic_tests> ${CMAKE_CURRENT_SOURCE_DIR}/test/test_jsons/basic.json)
-
-
-include_directories(fixed-point ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(fixed-point minijson)
-target_compile_options(fixed-point PRIVATE "-g")
+foreach(test ${TESTS})
+  get_filename_component(test_name ${test} NAME_WE)
+  add_executable(${test_name} ${test})
+  target_link_libraries(${test_name} minijson)
+  include_directories(${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  add_test(NAME ${test_name}
+           COMMAND $<TARGET_FILE:${test_name}> ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_jsons/basic.json) 
+endforeach()
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
