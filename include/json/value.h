@@ -21,6 +21,7 @@ struct ValueBase {
   };
   TypeCode code;
   ValueBase(TypeCode code_) : code(code_) {}
+  virtual ~ValueBase() {}
 };
 
 template<typename ty, ValueBase::TypeCode ty_code>
