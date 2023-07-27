@@ -23,7 +23,12 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  p.data["new_member"] = "new_value";
+
+  p.data["new_member_bool"] = true;
+  p.data["new_member_int"] = 123;
+  p.data["new_member"] = std::string("new_value");
+
+  std::cout << p.data << std::endl;
 
   if (!p.data.isMember("new_member")) {
     std::cerr << "new_member member not found" << std::endl;

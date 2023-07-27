@@ -50,6 +50,19 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  p.data["boolean_2"] = false;
+  std::cout << p.data << std::endl;
+  if (!p.data.isMember("boolean_2")) {
+    std::cerr << "boolean member not found" << std::endl;
+    return 1;
+  } else if (!p.data["boolean_2"].isBool()) {
+    std::cerr << "boolean_2 member is not bool" << std::endl;
+    return 1;
+  } else if (p.data["boolean_2"].asBool() != false) {
+    std::cerr << "boolean_2 member is not false" << std::endl;
+    return 1;
+  }
+
   return 0;
 }
 

@@ -87,6 +87,7 @@ struct Value {
   /*!
    * \brief Set the member.
    */
+  Value &operator=(const bool &);
   Value &operator=(const int &);
   Value &operator=(const int64_t &);
   Value &operator=(const uint64_t &);
@@ -100,6 +101,7 @@ struct Value {
   Value(ValueBase *data_) : data(data_) {}
   Value(ValueBase::TypeCode code);
   Value(const Value &other) : data(other.data) {}
+  Value(const bool &);
   Value(const int &);
   Value(const int64_t &);
   Value(const uint64_t &);

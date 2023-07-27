@@ -82,6 +82,12 @@ Value &Value::operator[](const std::string &ky) {
   return m[ky];
 }
 
+Value &Value::operator=(const bool &x) {
+  std::cout << x << std::endl;
+  data = std::make_shared<ValueBool>(x);
+  return *this;
+}
+
 Value &Value::operator=(const int &x) {
   data = std::make_shared<ValueInt>(x);
   return *this;
@@ -117,6 +123,9 @@ Value &Value::operator=(const Value &x) {
   return *this;
 }
 
+Value::Value(const bool &x) {
+  data = std::make_shared<ValueBool>(x);
+}
 
 Value::Value(const int &x) {
   data = std::make_shared<ValueInt>(x);

@@ -9,7 +9,7 @@ void yyrestart(FILE*);
 int main(int argc, char* argv[]) {
   Json::Value data(new Json::ValueObject({}));
 
-  data["string"] = "Hello There";
+  data["string"] = std::string("Hello There");
 
   std::cout << data << std::endl;
 
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
   }
 
   Json::Value another(new Json::ValueObject({}));
-  another["string"] = "Hello There";
+  another["string"] = std::string("Hello There");
   data["another"] = another;
 
   if (!data.isMember("another")) {

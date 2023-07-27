@@ -74,7 +74,7 @@ void Printer::print(const ValueArray &array) {
 void Printer::print(const ValueInt &vi) { os << vi.val; }
 
 void Printer::print(const ValueBool &b) {
-  os << (b.val ? "\"true\"" : "\"false\"");
+  os << (b.val ? "true" : "false");
 }
 
 void Printer::print(const ValueDouble &dbl) { os << dbl.val; }
