@@ -1,3 +1,11 @@
+#include <iostream>
+
+#include "json.lex.h"
+#include "json.tab.h"
+#include "json/printer.h"
+
+void yyrestart(FILE*);
+
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << " <json file>" << std::endl;
