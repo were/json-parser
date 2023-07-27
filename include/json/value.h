@@ -93,6 +93,7 @@ struct Value {
   Value &operator=(const uint64_t &);
   Value &operator=(const float &);
   Value &operator=(const double &);
+  Value &operator=(const char *);
   Value &operator=(const std::string &);
   Value &operator=(const Value &);
   /*!
@@ -107,6 +108,7 @@ struct Value {
   Value(const uint64_t &);
   Value(const float &);
   Value(const double &);
+  Value(const char *);
   Value(const std::string &);
   Value() {}
 

@@ -83,7 +83,6 @@ Value &Value::operator[](const std::string &ky) {
 }
 
 Value &Value::operator=(const bool &x) {
-  std::cout << x << std::endl;
   data = std::make_shared<ValueBool>(x);
   return *this;
 }
@@ -110,6 +109,11 @@ Value &Value::operator=(const double &x) {
 
 Value &Value::operator=(const float &x) {
   data = std::make_shared<ValueDouble>(x);
+  return *this;
+}
+
+Value &Value::operator=(const char *x) {
+  data = std::make_shared<ValueString>(std::string(x));
   return *this;
 }
 
@@ -145,6 +149,10 @@ Value::Value(const double &x) {
 
 Value::Value(const float &x) {
   data = std::make_shared<ValueDouble>(x);
+}
+
+Value::Value(const char* x) {
+  data = std::make_shared<ValueString>(std::string(x));
 }
 
 Value::Value(const std::string &x) {
